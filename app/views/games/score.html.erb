@@ -1,0 +1,28 @@
+<% require 'net/http' %>
+<% require 'json' %>
+
+<h1>Score</h1>
+
+<p>The letters were: <%= @letters.upcase %><p>
+<% is_word = true %>
+<% @word.chars.each do |letter| %>
+  <% if !(@letters.include? letter) %>
+    <p>Sorry but <%= @word %> can't be made from <%= @letters.upcase.chars.join(', ') %></p>
+    <% is_word = false %>
+    <% break %>
+  <% end %>
+<% end %>
+
+<% if is_word %>
+  <% url = "https://wagon-dictionary.herokuapp.com/#{@word}" %>
+  <%uri = URI(url) %>
+  <%response = Net::HTTP.get(uri)%>
+  <%result = JSON.parse(response)%>
+  <% if result["found"] == true %>
+    <p>Congratulations! <strong><%= @word.upcase %></strong> is a valid English word!</p>
+  <% else %>
+    <p>Sorry, <%= @word.upcase %> is not a valid English word!</p>
+  <% end %>
+<% end %>
+
+<%= link_to "Play Again", new_path %>
